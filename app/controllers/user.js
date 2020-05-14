@@ -2,14 +2,6 @@
  * 
  */
 
-const index = (application, req, res) => {
-    res.render('user/index', { validation: {}, login: {} });
-};
-
-const saveUser = (application, req, res) => {
-    res.render('user/saveUser', { validation: {}, user: {} });
-};
-
 const login = (application, req, res) => {
     var login = req.body;
 
@@ -17,14 +9,26 @@ const login = (application, req, res) => {
     req.assert('password', 'Password is required.').notEmpty();
     const errors = req.validationErrors();
     if (errors) {
-        res.render('user/index', { validation: errors, login: {} });
+        res.status(500).json({ 
+            error: errors, 
+            data: {} 
+        });
         return;
     }
 
     const connection = application.config.db_config();
     const userModels = new application.app.models.UserDAO(connection);
     userModels.login(login.username, login.password, (error, result) => {
-        res.redirect('/posts');
+        if (error || result.lenght == 0) {
+            res.status(401).json({
+                error: 'Error Authetication'
+            });
+            return;
+        }
+        res.status(200).json({
+            data: result
+        });
+        return;
     });
 };
 
@@ -36,19 +40,30 @@ const save = (application, req, res) => {
     req.assert('accessGroupId', 'Access Group Id is required.').notEmpty();
     const errors = req.validationErrors();
     if (errors) {
-        res.render('user/saveUser', { validation: errors, user: user });
+        res.status(500).json({ 
+            error: errors, 
+            data: user 
+        });
         return;
     }
     const connection = application.config.db_config();
     const userModels = new application.app.models.UserDAO(connection);
     userModels.save(user, (error, result) => {
-        res.redirect('/');
+        if (error) {
+            res.status(500).json({
+                error: error,
+                data: user
+            });
+            return;
+        }
+        res.status(200).json({
+            data: result
+        });
+        return;
     });
 };
 
 module.exports = {
-    index: index,
-    saveUser: saveUser,
     login: login,
     save: save
-}
+};

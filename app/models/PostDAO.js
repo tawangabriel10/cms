@@ -1,4 +1,4 @@
-const PostDAO = (connection) => {
+function PostDAO(connection) {
     this._connection = connection;
 };
 

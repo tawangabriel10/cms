@@ -1,4 +1,4 @@
-const UserDAO = (connection) => {
+function UserDAO(connection) {
     this._connection = connection;
 };
 

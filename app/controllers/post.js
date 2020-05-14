@@ -2,22 +2,23 @@
  * 
  */
 
-const posts = (application, req, res) => {
-    res.render('post/posts', {});
-};
-
-const savePost = (application, req, res) => {
-    res.render('post/savePost', { validation: {}, post: {} });
-};
-
 const getById = (application, req, res) =>{
     var post = req.query;
     const connection = application.config.db_config();
     const postModels = new application.app.models.PostDAO(connection);
 
     postModels.getById(post.postId, (error, result) => {
+        if (error) {
+            res.status(500).json({
+                error: error
+            });
+            return;
+        }
         console.log('getById: ', result);
-        res.render('post/post', {post: result[0]});
+        res.status(200).json({
+            data: result[0]
+        });
+        return;
     });
 };
 
@@ -25,7 +26,16 @@ const getAll = (application, req, res) => {
     const connection = application.config.db_config();
     const postModels = new application.app.models.PostDAO(connection);
     postModels.getAll((error, result) => {
-        res.render('post/posts', {posts: result});
+        if (error) {
+            res.status(500).json({
+                error: error
+            });
+            return;
+        }
+        res.status(200).json({
+            data: result
+        });
+        return;
     })
 };
 
@@ -38,7 +48,10 @@ const save = (application, req, res) => {
 
     var errors = req.validationErrors();
     if (errors) {
-        res.render('post/savePost', { validation: errors, post: post });
+        res.status(500).json({ 
+            error: errors, 
+            data: post 
+        });
         return;
     }
 
@@ -46,7 +59,16 @@ const save = (application, req, res) => {
     const postModels = new application.app.models.PostDAO(connection);
 
     postModels.save(post, (error, result) => {
-        res.redirect('/posts');
+        if (error) {
+            res.status(500).json({
+                error: error
+            });
+            return;
+        }
+        res.status(200).json({
+            data: result
+        });
+        return;
     });
 };
 
@@ -58,7 +80,10 @@ const update = (application, req, res) => {
 
     var errors = req.validationErrors();
     if (errors) {
-        res.render('post/savePost', { validation: errors, post: post });
+        res.status(500).json({ 
+            error: errors, 
+            data: post 
+        });
         return;
     }
 
@@ -66,7 +91,16 @@ const update = (application, req, res) => {
     const postModels = new application.app.models.PostDAO(connection);
 
     postModels.save(post, (error, result) => {
-        res.redirect('/posts');
+        if (error) {
+            res.status(500).json({
+                error: error
+            });
+            return;
+        }
+        res.status(200).json({
+            data: result
+        });
+        return;
     });
 };
 
@@ -76,16 +110,29 @@ const deleteId = (application, req, res) => {
     const postModels = new application.app.models.PostDAO(connection);
 
     postModels.delete(post.postId, (error, result) => {
+        if (error) {
+            res.status(500).json({
+                error: error
+            });
+            return;
+        }
         
         postModels.getAll((error1, result1) => {
-            res.render('post/posts', {posts: result1});
+            if (error) {
+                res.status(500).json({
+                    error: error1
+                });
+                return;
+            }
+            res.status(200).json({
+                data: result1
+            });
+            return;
         })
     });
 };
 
 module.exports = {
-    posts: posts,
-    savePost: savePost,
     getById: getById,
     getAll: getAll,
     save: save,

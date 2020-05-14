@@ -1,13 +1,5 @@
 module.exports = (application) => {
 
-    application.get('/post/find-all', (req, res) =>{
-        application.app.controllers.post.posts(application, req, res);
-    });
-
-    application.get('/post/save', (req, res) => {
-        application.app.controllers.post.savePost(application, req, res);
-    });
-
     application.get('/post', (req, res) => {
         application.app.controllers.post.getById(application, req, res);
     });
