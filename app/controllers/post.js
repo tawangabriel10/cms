@@ -1,7 +1,8 @@
 /**
- * 
+ * Controller of Posts 
  */
 
+ // method that queries a post by id and returns the result
 const getById = (application, req, res) =>{
     var post = req.query;
     const connection = application.config.db_config();
@@ -22,6 +23,7 @@ const getById = (application, req, res) =>{
     });
 };
 
+// method that queries all posts in the database and returns the result of the request
 const getAll = (application, req, res) => {
     const connection = application.config.db_config();
     const postModels = new application.app.models.PostDAO(connection);
@@ -39,6 +41,7 @@ const getAll = (application, req, res) => {
     })
 };
 
+// Method that validates received data, registers a post and returns the status of the request
 const save = (application, req, res) => {
     var post = req.body;
 
@@ -71,9 +74,10 @@ const save = (application, req, res) => {
         return;
     });
 };
-
+ // method that validates post data, changes in the database and returns the status of the request
 const update = (application, req, res) => {
     var post = req.body;
+    req.assert('postId', 'Post ID is required.').notEmpty();
     req.assert('title', 'Title is required.').notEmpty();
     req.assert('subtitle', 'Subtitle is required.').notEmpty();
     req.assert('content', 'Content is required.').notEmpty();
@@ -104,6 +108,7 @@ const update = (application, req, res) => {
     });
 };
 
+// Method that deletes a post from the database and returns the status of the request
 const deleteId = (application, req, res) => {
     var post = req.query;
     const connection = application.config.db_config();

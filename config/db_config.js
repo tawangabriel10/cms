@@ -1,3 +1,6 @@
+/**
+ * File that creates and exports a connection to the database
+ */
 var mysql = require('mysql');
 
 var connMySQL = function() {
